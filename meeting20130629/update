@@ -1,0 +1,5 @@
+pdflatex presentation || exit 1
+bibtex presentation || exit 1
+pdflatex presentation || exit 1
+pdflatex presentation || exit 1
+rm -f *.bbl *.ind *.dvi *.log *.idx *.ilg *.blg *.aux *.out *.lyx *.toc *.lof *.lot *.lol *.acn *.acr *.alg *.glg *.glo *.gls *.xdy *.loa *.nav *.snm *.run.xml *-blx.bib
