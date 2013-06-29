@@ -1,43 +1,42 @@
 import shakespeare, sys, mmh3, math, collections
 
-class Bloom:
+class CountMin:
     def __init__(self, m, k):
-        self.data = [0] * m
+        self.data = [[0] * m for i in range(k)]
         self.m = m
         self.k = k
         
-    def add(self, word):
+    def add(self, word, count=1):
         for i in range(self.k):
             h = mmh3.hash(word, i) 
-            self.data[h % self.m] = 1
+            self.data[i][h % self.m] += count
 
-    def contains(self, word):
+    def count(self, word):
+        m = 2**30
         for i in range(self.k):
             h = mmh3.hash(word, i) 
-            if not self.data[h % self.m]:
-                return False
-        return True
+            m = min(m, self.data[i][h % self.m])
+        return m
 
     def falsep(self, n):
         return (1 - (1 - 1.0/self.m)**(self.k*n))**self.k  
 
     def cardinality(self):
-        zeros = float(self.data.count(0))
-        return round(-self.m / self.k * math.log(zeros / self.m))
+        zeros = sum(float(d.count(0)) for d in self.data)
+        return round(-self.m * math.log(zeros / self.m / self.k))
 
 if __name__ == '__main__':
-    B = Bloom(2**20, 5)
+    M = CountMin(2**16, 5)
     for word in shakespeare.all_words():
-        B.add(word)
+        M.add(word)
 
     C = shakespeare.print_counter()
 
-    print 'Probability of false positive:', B.falsep(len(C))
-    print 'Estimated cardinality:', B.cardinality()
+    print 'Estimated cardinality:', M.cardinality()
     for test in iter(sys.stdin.readline, ''):
         test = test.strip().lower()
         
-        print 'Bloom filter: ', B.contains(test)
-        print 'Counter: ', C.has_key(test)
+        print 'Count-Min: ', M.count(test)
+        print 'Counter: ', C[test]
             
             

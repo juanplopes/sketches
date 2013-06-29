@@ -1,6 +1,13 @@
-import re, os
+import re, os, collections
 
 SPLITTER = re.compile('[^\w]+')
+
+def print_counter(path = 'shakespeare'):
+    C = collections.Counter(all_words(path))
+    print 'Total', sum(C.values())
+    print 'Distinct', len(C)
+    return C
+    
 
 def all_words(path = 'shakespeare'):
     for root, dirs, files in os.walk(path):
