@@ -33,7 +33,7 @@ class HyperLogLog:
         return v
 
 if __name__ == '__main__':
-    H = HyperLogLog(10)
+    H = HyperLogLog(16)
     for word in shakespeare.all_words():
         H.add(word)
         
