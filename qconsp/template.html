@@ -31,7 +31,7 @@ URL: https://code.google.com/p/io-2012-slides
       <span><img src="images/qcon.png"></span>
       <div class="text-align: center">
         Presenter mode:
-        <a href="?presentme=true" target="_self">ON</a>
+        <a href="?presentme=true" target="_self">ON</a> | 
         <a href="?presentme=false" target="_self">OFF</a>
       </div>
     </article>
@@ -164,6 +164,25 @@ select avg(price) from StockTick(symbol='IBM')<b>.win:time(1 hour)</b>
       </pre>
       
       <object data="svg/win_time_1hour.svg" type="image/svg+xml"></object>
+    </article>
+  </slide>
+  
+   <slide>
+    <hgroup>
+      <h2>Intelie Pipes</h2>
+      <h3>Linguagem para agregação distribuída</h3>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>O(n) tempo e O(1) espaço.</li>
+        <li>Tolerante a partição</li>
+        <li>      
+          Cabe em uma linha
+          <pre class="prettyprint" data-lang="PPL">
+StockTick symbol:IBM => avg(price) every minute
+          </pre>
+        </li>
+      </ul>
     </article>
   </slide>
   
