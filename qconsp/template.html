@@ -29,6 +29,11 @@ URL: https://code.google.com/p/io-2012-slides
   <slide class="logoslide nobackground">
     <article class="flexbox vcenter">
       <span><img src="images/qcon.png"></span>
+      <div class="text-align: center">
+        Presenter mode:
+        <a href="?presentme=true" target="_self">ON</a>
+        <a href="?presentme=false" target="_self">OFF</a>
+      </div>
     </article>
   </slide>
 
@@ -80,15 +85,26 @@ having sum(a.price + b.price) > 100
     </article>
   </slide>
 
+    <slide>
+    <hgroup>
+      <h2>Esper</h2>
+      <h3>Componente open-source (GPL v2) para CEP</h3>
+    </hgroup>
+    <article>
+      <img src="images/esper.png" alt="Esper website" />
+    </article>
+  </slide>
+
+
   <slide class="segue dark quote nobackground">
     <aside class="gdbar right bottom"><img src="images/intelie_128.png"></aside>
     <article class="flexbox vleft auto-fadein">
       <q>
-        WHAT DO SQL HAVE TO DO WITH IT?!?
+        [...] we’re measuring data less in terms of scale and more in terms of bandwidth.
       </q>
       <div class="author" style="width:500px">
-        <img src="images/plthulk.jpeg" alt="PLT HULK" style="float:left; width: 64px; height: 64px; margin-right: 10px" />
-        <span>PLT HULK<br><a href="https://twitter.com/PLT_HULK">twitter.com/PLT_HULK</a></span>
+        Mike Barlow<br>
+        O'Reilly
       </div>
     </article>
   </slide>
@@ -103,6 +119,54 @@ having sum(a.price + b.price) > 100
     </article>
   </slide>
 
+  
+  <slide>
+    <hgroup>
+      <h2>Alguns números de produção</h2>
+      <h3>De Junho de 2013</h3>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>3 servidores no cluster</li>
+        <li>Média de 10.000 mensagens/segundo (~4 MiB/s)</li>
+        <li>Picos de até 80.000 mensagens/segundo (~30 MiB/s)
+            <ul>
+                <li>Mantidos por algumas horas</li>
+                <li>Exemplo: chegada do Papa no Brasil; final do BBB; jogo do Brasil</li>
+            </ul>
+        </li>
+      </ul>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Conceito de Janela de Eventos</h2>
+      <h3>Janelas são mantidas em memória</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="EPL">
+select avg(price) from StockTick(symbol='IBM')<b>.win:time(1 min)</b>
+      </pre>
+      
+      <object data="svg/win_time_1min.svg" type="image/svg+xml"></object>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Conceito de Janela de Eventos</h2>
+      <h3>Janelas são mantidas em memória</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="EPL">
+select avg(price) from StockTick(symbol='IBM')<b>.win:time(1 hour)</b>
+      </pre>
+      
+      <object data="svg/win_time_1hour.svg" type="image/svg+xml"></object>
+    </article>
+  </slide>
+  
   <slide>
     <hgroup>
       <h2>Agenda</h2>
@@ -112,7 +176,6 @@ having sum(a.price + b.price) > 100
       <ul class="build">
         <li>Por quê?</li>
         <li>O quê?</li>
-        <li>Como?</li>
       </ul>
     </article>
   </slide>
