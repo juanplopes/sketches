@@ -1336,7 +1336,7 @@ var prettyPrint;
   registerLangHandler(sourceDecorator({
           'keywords': [JAVA_KEYWORDS, ['every']],
           'cStyleComments': true,
-          'types': /(?:((#|$)[^\s]+))/
+          'types': /(?:((#|$|\:)[^\s]+)(?!.*=>))/
         }), ['ppl']);
   registerLangHandler(sourceDecorator({
           'keywords': SH_KEYWORDS,
