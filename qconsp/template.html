@@ -21,6 +21,14 @@ URL: https://code.google.com/p/io-2012-slides
   <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
   <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
   <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX","output/HTML-CSS"],
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+    });
+  </script>
+  <script type="text/javascript" src="js/mathjax/MathJax.js"></script>
 </head>
 <body style="opacity: 0">
 
@@ -132,13 +140,15 @@ having sum(a.price + b.price) > 100
   <slide>
     <hgroup>
       <h2>Alguns números de produção</h2>
-      <h3>De Junho de 2013</h3>
+      <h3>De Julho de 2013</h3>
     </hgroup>
     <article>
       <ul class="build">
-        <li>4 servidores no cluster</li>
-        <li>Média de 10.000 mensagens/segundo (~4 MiB/s)</li>
-        <li>Máximas de até 80.000 mensagens/segundo (~30 MiB/s)
+        <li>4 máquinas físicas no cluster</li>
+        <li>Buscas full-text num dataset de 15TB</li>
+        <li>Cerca de 60 computações contínuas sobre o fluxo em tempo real</li>
+        <li>Média de 20.000 mensagens/segundo (~7 MB/s)</li>
+        <li>Máximas de até 80.000 mensagens/segundo em grandes eventos (~30 MB/s)
             <ul>
                 <li>Ao longo de várias horas</li>
                 <li>Exemplo: chegada do Papa no Brasil; final do BBB; jogo do Brasil</li>
@@ -235,9 +245,36 @@ StockTick symbol:IBM => price#avg every minute
       <pre class="prettyprint lang-ppl" data-lang="PPL">
 StockTick symbol:IBM => price#stdev every hour
       </pre>
-      <div class="centered">
-        <object data="equations/eq2.svg" type="image/svg+xml"></object>
-      </div>
+      
+      <table style="border-bottom: 0">
+        <tr>
+          <td style="color:black">
+            \begin{equation*}
+            \bar x_n = \bar x_{n-1} + \frac{x_n - \bar x_{n-1}}{n}
+            \end{equation*}
+            \begin{equation*}
+            M_{2,n}\! =\sum_{i=1}^n (x_i - \bar x_n)^2
+            \end{equation*}
+            \begin{equation*}
+            M_{2,n}\! = M_{2,n-1} + (x_n - \bar x_{n-1})(x_n - \bar x_n)
+            \end{equation*}
+            \begin{equation*}
+            \sigma_n = \frac{M_{2,n}}{n}
+            \end{equation*}
+          </td>
+          <td style="color:black">
+            \begin{equation*}
+            \delta\! = \bar x_B - \bar x_A
+            \end{equation*}
+            \begin{equation*}
+            \bar x_X = \bar x_A + \delta\cdot\frac{n_B}{n_X}
+            \end{equation*}
+            \begin{equation*}
+            M_{2,X} = M_{2,A} + M_{2,B} + \delta^2\cdot\frac{n_A n_B}{n_X}
+            \end{equation*}
+          </td>
+        </tr>
+      </table>
     </article>
   </slide>
 
@@ -253,6 +290,120 @@ StockTick symbol:IBM => 42 * price#avg * price#stdev every hour
       
       <div class="centered">
         <object data="svg/mergeable.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Contar usuários distintos por hora</h2>
+      <h3>Moleza, só que não</h3>
+    </hgroup>
+    <article class="build">
+      <pre class="prettyprint lang-ppl" data-lang="PPL">
+PageViews page:home => user_id#dcount every hour 
+      </pre>
+      
+      <div class="centered">
+        <object data="svg/dcount_mergeable.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Contar usuários distintos por hora</h2>
+      <h3>E o custo de comunicação dos resultados?</h3>
+    </hgroup>
+    <article class="build">
+      <div class="centered">
+        <object data="svg/dcount_partition.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide class="segue dark nobackground">
+    <aside class="gdbar"><img src="images/intelie_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Sketching data structures</h2>
+      <h3>Porque o universo é probabilístico<br>(exceto para quem prefere a Interpretação de Everett)</h3>
+    </hgroup>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Sketching data structures</h2>
+      <h3>Se você pode lidar com um pouco de imprecisão, por que não?</h3>
+    </hgroup>
+    <article>
+      <ul class="build">
+        <li>
+          Apenas uma iteração sobre os dados
+          <ul>
+            <li>Úteis para streams (sem acesso aleatório).</li>
+          </ul>
+        </li>
+        <li>Conhecidos como streaming algorithms</li>
+        <li>Espaço e tempo limitados</li>
+        <li>Determinismo vs Recursos</li>
+      </ul>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Conjuntos</h2>
+      <h3>Álgebra: até crianças de sete anos entendem.</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/sets.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Sketching e conjuntos</h2>
+      <h3>Uma área com muitas contribuições recentes.</h3>
+    </hgroup>
+    <article class="build">
+
+      <div>
+        <hr/>
+        <img src="images/flajolet.jpeg" style="float: left; width: 100px; height: 100px; margin-right: 20px; border: 5px solid gray"/>
+        <p>Set cardinality</p>
+        <p><b>HyperLogLog</b><br>
+        Philippe Flajolet (2007)</p>
+      </div>
+
+      <div>
+        <hr/>
+        <img src="images/cormode.jpg" style="float: left; width: 100px; height: 100px; margin-right: 20px; border: 5px solid gray"/>
+        <p>Multiset sumarization</p>
+        <p><b>Count-Min Sketch</b><br>
+        Graham Cormode (2003)</p>
+      </div>
+
+      <div>
+        <hr/>
+        <img src="images/pokemon.png" style="float: left; width: 100px; height: 100px; margin-right: 20px; border: 5px solid gray"/>
+        <p>Set membership</p>
+        <p><b>Bloom Filters</b><br>
+        Burton Bloom (1970)</p>
+      </div>
+
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Bloom Filters</h2>
+      <h3>É como um HashSet, só que não.</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/bloom_filters.svg" type="image/svg+xml"></object>
       </div>
     </article>
   </slide>
