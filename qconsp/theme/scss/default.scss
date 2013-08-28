@@ -923,7 +923,15 @@ aside.gdbar {
     position: absolute;
     bottom: 80px;
     line-height: 1.4;
+    width: 700px;
   }
+ 
+  a {
+    color: white;
+    border-bottom: 1px solid white;   
+  }
+
+ 
 }
 
 [data-config-contact] {
