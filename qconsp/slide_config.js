@@ -5,7 +5,7 @@ var SLIDE_CONFIG = {
     subtitle: 'Como um pouco de álgebra pode ajudar',
     eventInfo: {
       title: 'QCon SP',
-      date: '8/30/2013'
+      date: '30 de Agosto de 2013'
     },
     useBuilds: true, // Default: true. False will turn off slide animation builds.
     usePrettify: true, // Default: true

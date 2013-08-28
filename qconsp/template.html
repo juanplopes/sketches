@@ -56,7 +56,9 @@ URL: https://code.google.com/p/io-2012-slides
       <h3>Para monitoração da infra de TI</h3>
     </hgroup>
     <article>
-      <object data="svg/cep.svg" type="image/svg+xml"></object>
+      <div class="centered">
+        <object data="svg/cep.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
 
@@ -88,10 +90,12 @@ having sum(a.price + b.price) > 100
     <slide>
     <hgroup>
       <h2>Esper</h2>
-      <h3>Componente open-source (GPL v2) para CEP</h3>
+      <h3>Componente de CEP open-source (GPL v2)</h3>
     </hgroup>
     <article>
-      <img src="images/esper.png" alt="Esper website" />
+      <div class="centered">
+        <img src="images/esper.png" alt="Esper website" />
+      </div>
     </article>
   </slide>
 
@@ -115,7 +119,9 @@ having sum(a.price + b.price) > 100
       <h3>Em produção há cerca de um ano e meio</h3>
     </hgroup>
     <article>
-      <object data="svg/logs.svg" type="image/svg+xml"></object>
+      <div class="centered">
+        <object data="svg/logs.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
 
@@ -129,9 +135,9 @@ having sum(a.price + b.price) > 100
       <ul class="build">
         <li>3 servidores no cluster</li>
         <li>Média de 10.000 mensagens/segundo (~4 MiB/s)</li>
-        <li>Picos de até 80.000 mensagens/segundo (~30 MiB/s)
+        <li>Máximas de até 80.000 mensagens/segundo (~30 MiB/s)
             <ul>
-                <li>Mantidos por algumas horas</li>
+                <li>Ao longo de várias horas</li>
                 <li>Exemplo: chegada do Papa no Brasil; final do BBB; jogo do Brasil</li>
             </ul>
         </li>
@@ -141,7 +147,7 @@ having sum(a.price + b.price) > 100
   
   <slide>
     <hgroup>
-      <h2>Conceito de Janela de Eventos</h2>
+      <h2>Janela de Eventos</h2>
       <h3>Janelas são mantidas em memória</h3>
     </hgroup>
     <article>
@@ -149,38 +155,45 @@ having sum(a.price + b.price) > 100
 select avg(price) from StockTick(symbol='IBM')<b>.win:time(1 min)</b>
       </pre>
       
-      <object data="svg/win_time_1min.svg" type="image/svg+xml"></object>
+      <div class="centered">
+        <object data="svg/win_time_1min.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
   
   <slide>
     <hgroup>
-      <h2>Conceito de Janela de Eventos</h2>
-      <h3>Janelas são mantidas em memória</h3>
+      <h2>Janela de Eventos</h2>
+      <h3>Pode ser ruim com janelas muito longas</h3>
     </hgroup>
     <article>
       <pre class="prettyprint" data-lang="EPL">
 select avg(price) from StockTick(symbol='IBM')<b>.win:time(1 hour)</b>
       </pre>
       
-      <object data="svg/win_time_1hour.svg" type="image/svg+xml"></object>
+      <div class="centered">
+        <object data="svg/win_time_1hour.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
-  
-   <slide>
+
+  <slide>
     <hgroup>
       <h2>Intelie Pipes</h2>
-      <h3>Linguagem para agregação distribuída</h3>
+      <h3>Linguagem para agregações em tempo real</h3>
     </hgroup>
-    <article>
+    <article class="build">
       <ul class="build">
-        <li>O(n) tempo e O(1) espaço.</li>
-        <li>Tolerante a partição</li>
-        <li>      
-          Cabe em uma linha
-          <pre class="prettyprint" data-lang="PPL">
-StockTick symbol:IBM => avg(price) every minute
-          </pre>
+        <li>Agregações sobre grandes fluxos;</li>
+        <li>Tolerante a partição;</li>
+        <li>O(n) time;</li>
+        <li>O(1) space;</li>
+        <li>Associativa à esquerda (onde importa);</li>
+        <li>One-liners!!!11</li>
+        <li>
+           <pre class="prettyprint lang-ppl" data-lang="PPL">
+StockTick symbol:IBM => price#avg every minute
+           </pre>
         </li>
       </ul>
     </article>
@@ -188,16 +201,88 @@ StockTick symbol:IBM => avg(price) every minute
   
   <slide>
     <hgroup>
-      <h2>Agenda</h2>
-      <h3>aa</h3>
+      <h2>Tolerância a partição</h2>
+      <h3>Eu sei que vocês sabem, mas deixa o slide aí</h3>
     </hgroup>
     <article>
-      <ul class="build">
-        <li>Por quê?</li>
-        <li>O quê?</li>
-      </ul>
+      <div class="centered">
+        <object data="svg/partition1.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Tolerância a partição</h2>
+      <h3>Eu sei que vocês sabem, mas deixa o slide aí</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/partition2.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Agregações distribuídas</h2>
+      <h3>Mesmo casos simples precisam de cuidado</h3>
+    </hgroup>
+    <article class="build">
+      <pre class="prettyprint lang-ppl" data-lang="PPL">
+StockTick symbol:IBM => price#stdev every hour
+      </pre>
+      <div class="centered">
+        <object data="equations/eq2.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Agregações distribuídas</h2>
+      <h3>Mas afinal, o que é trasmitido entre os nós?</h3>
+    </hgroup>
+    <article class="build">
+      <pre class="prettyprint lang-ppl" data-lang="PPL">
+StockTick symbol:IBM => 42 * price#avg * price#stdev every hour
+      </pre>
+      
+      <div class="centered">
+        <object data="svg/mergeable.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Table Option A</h2>
+      <h3>Subtitle Placeholder</h3>
+    </hgroup>
+    <article>
+      <table>
+        <tr>
+          <th></th><th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Column 4</th>
+        </tr>
+        <tr>
+          <td>Row 1</td><td>placeholder</td><td class="highlight">placeholder</td><td>placeholder</td><td>placeholder</td>
+        </tr>
+        <tr>
+          <td>Row 2</td><td>placeholder</td><td>placeholder</td><td>placeholder</td><td>placeholder</td>
+        </tr>
+        <tr>
+          <td>Row 3</td><td>placeholder</td><td>placeholder</td><td>placeholder</td><td>placeholder</td>
+        </tr>
+        <tr>
+          <td>Row 4</td><td>placeholder</td><td>placeholder</td><td>placeholder</td><td>placeholder</td>
+        </tr>
+        <tr>
+          <td>Row 5</td><td>placeholder</td><td>placeholder</td><td>placeholder</td><td>placeholder</td>
+        </tr>
+      </table>
+    </article>
+  </slide>
+
 
   <slide>
     <hgroup>
