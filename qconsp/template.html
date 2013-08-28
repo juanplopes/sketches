@@ -399,7 +399,7 @@ PageViews page:home => user_id:dcount every hour
   <slide>
     <hgroup>
       <h2>Bloom Filters</h2>
-      <h3>É como um HashSet, só que não.</h3>
+      <h3>São tipo HashSets, só que não.</h3>
     </hgroup>
     <article>
       <div class="centered">
@@ -407,7 +407,51 @@ PageViews page:home => user_id:dcount every hour
       </div>
     </article>
   </slide>
-
+  
+  <slide>
+    <hgroup>
+      <h2>Bloom Filters</h2>
+      <h3>Probabilidade de falso positivo.<br>Para $n$ elementos no conjunto, $k$ funções de hash e $m$ bits:</h3>
+    </hgroup>
+    <article class="build fade centered" style="font-size: 14pt">
+      <div>
+      <span>Probabilidade de não-colisão após $n$ inserções com $k$ funções de hash:</span>
+      \begin{equation*}
+      \left(1-\frac{1}{m}\right)^{kn}
+      \end{equation*}
+      </div>
+      <div>
+      <span>Invertendo, probabilidade de colisão por função de hash:</span>
+      \begin{equation*}
+      1-\left(1-\frac{1}{m}\right)^{kn}
+      \end{equation*}
+      </div>
+      <div>
+      <span>Para $k$ funções de hash:</span>
+      \begin{equation*}
+      \left(1-\left[1-\frac{1}{m}\right]^{kn}\right)^k
+      \end{equation*}
+      </div>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Bloom Filters</h2>
+      <h3>Quantos bytes para inserir $n$ itens?</h3>
+    </hgroup>
+    <article class="centered" style="font-size: 14pt">
+      <div>
+      \begin{equation*}
+      m=-\frac{n\ln p}{(\ln 2)^2}
+      \end{equation*}
+      </div>
+      <div>
+      <object data="svg/bloom_graph.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+  
   <slide class="thank-you-slide segue nobackground">
     <aside class="gdbar right"><img src="images/intelie_128.png"></aside>
     <article class="flexbox vleft auto-fadein">
