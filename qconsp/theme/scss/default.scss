@@ -827,6 +827,11 @@ article.smaller {
   background: $brand-blue !important;
   color: white;
 
+  a {
+    color: white;
+    border-bottom: none;
+  }
+
   h2 {
     font-size: 60px;
     color: inherit;
