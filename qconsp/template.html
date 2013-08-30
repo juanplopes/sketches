@@ -600,18 +600,118 @@ PageViews page:home => user_id:dcount every hour
 
   <slide>
     <hgroup>
-      <h2>Count-Min Sketch</h2>
-      <h3>Calculando o erro.</h3>
+      <h2>HyperLogLog</h2>
+      <h3>Uma ideia genial, estimando por baixo.</h3>
+    </hgroup>
+    <article>
+      <p>Escolhe-se $log_2 m$ bits do espaço de hash para corresponderem a $m$ subfluxos ($|M| = m$). A busca pelo prefixo é efetuada nos bits restantes.</p>
+      <p>Por exemplo, para $log_2 m = 3$ ($m = 8$):</p>
+      <div class="centered">
+        <object data="svg/hll_input.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Atualizando o array $M$.</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/hll_update.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Array $M$ depois de diversos updates.</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/hll_update2.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Como estimar?</h3>
     </hgroup>
     <article class="build">
-      <div>
-        <p>Define-se largura ($w$) e profundidade ($d$), de forma que:</p>
-        <p class="centered">$w = \lceil e/\epsilon \rceil$ e $d = \lceil \ln{1/\delta} \rceil$.</p>
-      </div>      
-      <div>
-        <p>Assim, é possível responder point queries ($\hat{a}_i$) onde:</p>
-        <p class="centered">$a_i \leq \hat{a}_i \leq \epsilon \|a\|$<p>
-        <p>O lado direito da inequação se mantém com probabilidade $1 - \delta$.</p>
+      <div>      
+        <p>Estimativa de cada registrador:</p>
+        <p class="centered">$\hat{E}_i = 2^{M(i)}$</p>
+      </div>
+      <div>      
+        <p>Estimativa geral (média harmônica de todas as estimativas):</p>
+        <p class="centered">$\hat{E} = \frac{m^2}{\sum_{i=0}^{m} \hat{E}(i)^{-1}} = \frac{m^2}{\sum_{i=0}^{m} 2^{-M(i)}}$</p>
+      </div>
+      <div>      
+        <p>Estimativa geral (corrigindo o bias multiplicativo):</p>
+        <p class="centered">$\hat{E} = \frac{\alpha_m m^2}{\sum_{i=0}^{m} 2^{-M(i)}}$, onde $\alpha_m = (m \int_0^{\infty} (log_2 (\frac{2+u}{1+u}))^m du)^{-1}$</p>
+      </div>
+
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Uma versão didática (em Python, claro)</h3>
+    </hgroup>
+    <article class="smaller">
+<pre class="prettyprint" data-lang="python">
+class HyperLogLog:
+    def __init__(self, log2m):
+        self.log2m = log2m
+        self.m = 1 << log2m
+        self.data = [0]*self.m
+        self.alphaMM = (0.7213 / (1 + 1.079 / self.m)) * self.m * self.m
+        
+    def add(self, o):
+        x = mmh3.hash(str(o), 0)
+        a, b = 32-self.log2m, self.log2m
+        i = x >> a
+        v = self._bitscan(x << b, a)       
+        self.data[i] = max(self.data[i], v)
+        
+    def cardinality(self):
+        estimate = self.alphaMM / sum([2**-v for v in self.data])
+        if estimate <= 2.5 * self.m:
+            zeros = float(self.data.count(0))
+            return round(-self.m * math.log(zeros / self.m))
+        else:
+            return round(estimate)
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Conclusão</h2>
+      <h3>De Julho de 2013</h3>
+    </hgroup>
+    <article class="build">
+        <p>Os melhores algoritmos se escondem nos menores códigos...</p>
+        <p>... porém nos papers mais obscuros.</p>
+        <p>Estruturas de dados probabilisticas vão desempenhar um papel fundamental num futuro próximo.</p>
+        <p>A Academia já percebeu isso e já está dez anos à frente.</p>
+        <p>A indústria ainda está engatinhando.</p>
+    </article>
+  </slide>
+  
+  <slide>
+    <hgroup>
+      <h2>Twitter Algebird</h2>
+      <h3>Por falar em indústria...</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <img src="images/algebird.png" width="75%" height="75%"/>
       </div>
     </article>
   </slide>
