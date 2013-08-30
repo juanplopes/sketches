@@ -337,7 +337,7 @@ PageViews page:home => user_id:dcount every hour
     <aside class="gdbar"><img src="images/intelie_128.png"></aside>
     <hgroup class="auto-fadein">
       <h2>Sketching data structures</h2>
-      <h3>Porque o universo é probabilístico<br>(exceto para quem prefere a Interpretação de Everett)</h3>
+      <h3>Porque o universo é probabilístico<br>(exceto para quem discorda da Interpretação de Copenhagen)</h3>
     </hgroup>
   </slide>
   
@@ -404,6 +404,19 @@ PageViews page:home => user_id:dcount every hour
         Burton Bloom (1970)</p>
       </div>
 
+    </article>
+  </slide>
+
+  <slide class="segue dark quote nobackground">
+    <aside class="gdbar right bottom"><img src="images/intelie_128.png"></aside>
+    <article class="flexbox vleft auto-fadein">
+      <q>
+        It is theoretically impossible to define a hash function that
+ creates random data from non-random data. But in practice it is not difficult to produce a pretty good imitation.
+      </q>
+      <div class="author">
+        Donald Knuth
+      </div>
     </article>
   </slide>
   
@@ -505,13 +518,16 @@ PageViews page:home => user_id:dcount every hour
       <h2>Count-Min Sketch</h2>
       <h3>Calculando o erro.</h3>
     </hgroup>
-    <article>
-      <p>Define-se largura ($w$) e profundidade ($d$), de forma que:</p>
-      <p class="centered">$w = \lceil e/\epsilon \rceil$ e $d = \lceil \ln{1/\delta} \rceil$.</p>
-      
-      <p>Assim, é possível responder point queries ($\hat{a}_i$) onde:
-      <p class="centered">$a_i \leq \hat{a}_i \leq \epsilon \|a\|$<p>
-      <p>O lado direito da inequação se mantém com probabilidade $1 - \delta$.</p>
+    <article class="build">
+      <div>
+        <p>Define-se largura ($w$) e profundidade ($d$), de forma que:</p>
+        <p class="centered">$w = \lceil e/\epsilon \rceil$ e $d = \lceil \ln{1/\delta} \rceil$.</p>
+      </div>      
+      <div>
+        <p>Assim, é possível responder point queries ($\hat{a}_i$) onde:</p>
+        <p class="centered">$a_i \leq \hat{a}_i \leq \epsilon \|a\|$<p>
+        <p>O lado direito da inequação se mantém com probabilidade $1 - \delta$.</p>
+      </div>
     </article>
   </slide>
   
@@ -520,19 +536,86 @@ PageViews page:home => user_id:dcount every hour
       <h2>Count-Min Sketch</h2>
       <h3>Range queries.</h3>
     </hgroup>
-    <article>
-      <p>Estimar $\sum_{i = r}^{l} a_i$.</p>
+    <article class="build">
+      <p>Consiste em estimar $\sum_{i = l}^{r} a_i$.</p>
 
-      <p>Manter 
-      
-      <p class="centered">$w = \lceil e/\epsilon \rceil$ e $d = \lceil \ln{1/\delta} \rceil$.</p>
-      
-      <p>Assim, é possível responder point queries ($\hat{a}_i$) onde:
-      <p class="centered">$a_i \leq \hat{a}_i$ (por definição);<p>
-      <p class="centered">$\hat{a}_i \leq \epsilon \|a\|$ (com $1 - \delta$ probabilidade).</p>
+      <div>
+        <p>O truque é tratar a estrutura como uma Fenwick Tree sobre um array probabilistico.</p> 
+        
+        <div class="centered">
+          <img src="images/fenwick.png" width="50%" height="50%"/>
+        </div>
+      </div>
+    </article>
+  </slide>
+
+
+  <slide class="segue dark quote nobackground">
+    <aside class="gdbar right bottom"><img src="images/intelie_128.png"></aside>
+    <article class="flexbox vleft auto-fadein">
+      <q>The math establishing error bounds or other properties can be somewhat hairy, but the structures themselves are not too complicated.
+      </q>
+      <div class="author">
+        Joseph Kibe - Shareaholic<br>
+        <a href="https://tech.shareaholic.com/2012/12/03/the-count-min-sketch-how-to-count-over-large-keyspaces-when-about-right-is-good-enough/">The Count-min Sketch: How to Count Over Large Keyspaces When 'About Right' Is Good Enough</a>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Phillipe Flajolet <span style="font-size: 22pt">(∗1948 †2011)</span></h2>
+      <h3>O homem por trás do HyperLogLog.</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <img src="images/flajolet_died.png" width="75%" height="75%"/>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Distribuição de bits no hash</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/hll_perc.svg" type="image/svg+xml"></object>
+      </div>
     </article>
   </slide>
   
+  <slide>
+    <hgroup>
+      <h2>HyperLogLog</h2>
+      <h3>Distribuição de bits no hash</h3>
+    </hgroup>
+    <article>
+      <div class="centered">
+        <object data="svg/hll_frac.svg" type="image/svg+xml"></object>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Count-Min Sketch</h2>
+      <h3>Calculando o erro.</h3>
+    </hgroup>
+    <article class="build">
+      <div>
+        <p>Define-se largura ($w$) e profundidade ($d$), de forma que:</p>
+        <p class="centered">$w = \lceil e/\epsilon \rceil$ e $d = \lceil \ln{1/\delta} \rceil$.</p>
+      </div>      
+      <div>
+        <p>Assim, é possível responder point queries ($\hat{a}_i$) onde:</p>
+        <p class="centered">$a_i \leq \hat{a}_i \leq \epsilon \|a\|$<p>
+        <p>O lado direito da inequação se mantém com probabilidade $1 - \delta$.</p>
+      </div>
+    </article>
+  </slide>
+
   <slide class="thank-you-slide segue nobackground">
     <aside class="gdbar right"><img src="images/intelie_128.png"></aside>
     <article class="flexbox vleft auto-fadein">
@@ -546,8 +629,10 @@ PageViews page:home => user_id:dcount every hour
   </slide>
 
   <slide class="logoslide dark nobackground">
-    <article class="flexbox vcenter">
+    <article class="flexbox vcenter centered">
       <span><img src="images/intelie_logo_white.png"></span>
+      <p class="white" style="margin-bottom: 30px;">Estamos contratando!</p>
+      <a href="http://www.intelie.com.br/trabalhe" class="white" style="border-bottom:1px solid white">intelie.com.br/trabalhe</a>
     </article>
   </slide>
 
