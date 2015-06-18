@@ -18,26 +18,31 @@ class Bloom:
                 return False
         return True
 
-    def falsep(self, n):
-        return (1 - (1 - 1.0/self.m)**(self.k*n))**self.k  
-
     def cardinality(self):
-        zeros = float(self.data.count(0))
-        return round(-self.m / self.k * math.log(zeros / self.m))
+        try:
+            zeros = float(self.data.count(0))
+            return round(-self.m / self.k * math.log(zeros / self.m))
+        except:
+            return -1
+
+def test_errors(bloom, control, words):
+    count = 0
+    false = 0
+    for word in words:
+        count+=1
+        if bloom.contains(word):
+            false+=1
+    print '\t'.join(str(x) for x in (len(control), bloom.cardinality(), false/float(count)))
 
 if __name__ == '__main__':
-    B = Bloom(2**20, 5)
-    for word in shakespeare.all_words():
-        B.add(word)
+    words = shakespeare.distinct_words()
+    control = set()
+    bloom = Bloom(2048, 1)
+    
+    print '\t'.join(('n', 'cardinality', 'falsep'))
+    for word in words[:20000]:
+        bloom.add(word)
+        control.add(word)
+        if len(control) % 500 == 0:
+            test_errors(bloom, control, words[20000:])            
 
-    C = shakespeare.print_counter()
-
-    print 'Probability of false positive:', B.falsep(len(C))
-    print 'Estimated cardinality:', B.cardinality()
-    for test in iter(sys.stdin.readline, ''):
-        test = test.strip().lower()
-        
-        print 'Bloom filter: ', B.contains(test)
-        print 'Counter: ', C.has_key(test)
-            
-            

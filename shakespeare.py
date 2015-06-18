@@ -15,6 +15,9 @@ def all_words(path = 'shakespeare'):
             for word in iterate_file(os.path.join(root, work)):
                 yield word
 
+def distinct_words(path = 'shakespeare'):
+    return list(set(all_words(path)))
+
 def iterate_file(path):
     with open(path) as f:
         for line in f.readlines():
