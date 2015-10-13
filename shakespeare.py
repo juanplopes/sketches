@@ -7,8 +7,13 @@ def print_counter(path = 'shakespeare'):
     print 'Total', sum(C.values())
     print 'Distinct', len(C)
     return C
-    
 
+def each_work(path = 'shakespeare'):
+    yield ('tragedies', distinct_words('shakespeare/tragedies'))
+    yield ('poetry', distinct_words('shakespeare/poetry'))
+    yield ('comedies', distinct_words('shakespeare/comedies'))
+    yield ('histories', distinct_words('shakespeare/histories'))
+    
 def all_words(path = 'shakespeare'):
     for root, dirs, files in os.walk(path):
         for work in files:
