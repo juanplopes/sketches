@@ -4,15 +4,14 @@ SPLITTER = re.compile('[^\w]+')
 
 def print_counter(path = 'shakespeare'):
     C = collections.Counter(all_words(path))
-    print 'Total', sum(C.values())
-    print 'Distinct', len(C)
+    print ('Total', sum(C.values()))
+    print ('Distinct', len(C))
     return C
 
 def each_work(path = 'shakespeare'):
-    yield ('tragedies', distinct_words('shakespeare/tragedies'))
-    yield ('poetry', distinct_words('shakespeare/poetry'))
-    yield ('comedies', distinct_words('shakespeare/comedies'))
-    yield ('histories', distinct_words('shakespeare/histories'))
+    for root, dirs, files in os.walk(path):
+        for work in files:
+            yield (work, list(set(iterate_file(os.path.join(root, work)))))
     
 def all_words(path = 'shakespeare'):
     for root, dirs, files in os.walk(path):
