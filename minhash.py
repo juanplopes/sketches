@@ -20,20 +20,28 @@ def minhash2(k, HA, HB):
     HY = set(HX).intersection(HA).intersection(HB)
     return len(HY)/float(k)
 
-if __name__ == '__main__':
-    hsig = minhash1_sig
-    hcmp = minhash1
-
-    works = list(shakespeare.each_work())
-
-    hashes = {name: hsig(1000, A) for name, A in works}
-
+def real(works):
     real = {}
     for i in range(len(works)):
         for j in range(i+1, len(works)):
             name1, words1 = works[i]
             name2, words2 = works[j]
             real[(name1, name2)] = normal_compare(words1, words2)
+    return real
+
+if __name__ == '__main__':
+    #shakespeare.write_duplicates()
+    #sys.exit(0)
+
+    works = list(shakespeare.each_work()) + list(shakespeare.each_work('duplicates'))
+
+    real = real(works)
+   
+    hsig = minhash1_sig
+    hcmp = minhash1
+
+    hashes = {name: hsig(1000, A) for name, A in works}
+
 
     for k in range(25, 1001, 25):
         sys.stderr.write(str(k)+'\n')
