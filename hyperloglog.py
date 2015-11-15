@@ -1,4 +1,4 @@
-import shakespeare, sys, mmh3, math, collections
+import shakespeare, sys, mmh3, math, collections, heapq
 
 class HyperLogLog:
     def __init__(self, log2m):
@@ -19,6 +19,7 @@ class HyperLogLog:
         
     def cardinality(self):
         estimate = self.alphaMM / sum([2**-v for v in self.data])
+        
         if estimate <= 2.5 * self.m:
             zeros = float(self.data.count(0))
             return round(-self.m * math.log(zeros / self.m))
@@ -33,14 +34,17 @@ class HyperLogLog:
         return v
 
 if __name__ == '__main__':
-    H = HyperLogLog(16)
-    for word in shakespeare.all_words():
-        H.add(word)
-        
+    works = list(shakespeare.each_work_raw())
+    
+    for name, words in works:
+        expected = len(set(words))
+        H = HyperLogLog(12)
+        for word in words:
+            H.add(word)
+        a = set(map(lambda x: (x+2**31)/float(2**32), heapq.nsmallest(64, map(mmh3.hash, words))))
+        print len(a), max(a), (len(a)-1)/max(a)
+        print name, H.cardinality(), expected,H.cardinality()/float(expected)
 
-    shakespeare.print_counter()
-    print 'HyperLogLog counted', H.cardinality()
-            
             
             
             

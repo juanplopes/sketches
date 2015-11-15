@@ -12,6 +12,12 @@ def each_work(path = 'shakespeare'):
     for root, dirs, files in os.walk(path):
         for work in files:
             yield (os.path.join(root, work), list(set(iterate_file(os.path.join(root, work)))))
+
+def each_work_raw(path = 'shakespeare'):
+    for root, dirs, files in os.walk(path):
+        for work in files:
+            yield (os.path.join(root, work), list(iterate_file(os.path.join(root, work))))
+
     
 def all_words(path = 'shakespeare'):
     for root, dirs, files in os.walk(path):
