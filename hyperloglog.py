@@ -1,4 +1,4 @@
-import shakespeare, sys, mmh3, math, collections, heapq
+import shakespeare, sys, mmh3, math, collections, random, string, hllbias
 
 class HyperLogLog:
     def __init__(self, log2m):
@@ -17,11 +17,22 @@ class HyperLogLog:
         
         self.data[i] = max(self.data[i], v)
         
-    def cardinality(self):
+    def cardinality(self, method):
         estimate = self.alphaMM / sum([2**-v for v in self.data])
-        
-        if estimate <= 2.5 * self.m:
-            zeros = float(self.data.count(0))
+        zeros = float(self.data.count(0))
+        if method == 2:
+            bias = hllbias.bias(self.log2m, estimate)
+            if estimate <= 5 * self.m:
+                estimate -= bias
+            if zeros != 0:
+                h = -self.m * math.log(zeros / self.m)
+            else:
+                h = estimate
+            if h < hllbias.threshold(self.log2m):
+                return round(h)
+            else:
+                return round(estimate)                
+        elif estimate <= 2.5 * self.m and method == 0:
             return round(-self.m * math.log(zeros / self.m))
         else:
             return round(estimate)
@@ -34,16 +45,15 @@ class HyperLogLog:
         return v
 
 if __name__ == '__main__':
-    works = list(shakespeare.each_work_raw())
-    
-    for name, words in works:
-        expected = len(set(words))
-        H = HyperLogLog(12)
+    words = set(shakespeare.all_words())
+    expected = len(words)
+    print expected
+    for p in range(7, 19):
+        H = HyperLogLog(p)
         for word in words:
             H.add(word)
-        a = set(map(lambda x: (x+2**31)/float(2**32), heapq.nsmallest(64, map(mmh3.hash, words))))
-        print len(a), max(a), (len(a)-1)/max(a)
-        print name, H.cardinality(), expected,H.cardinality()/float(expected)
+        print p, H.cardinality(method=0), H.cardinality(method=1), H.cardinality(method=2)      
+    
 
             
             
