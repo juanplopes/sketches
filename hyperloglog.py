@@ -1,4 +1,4 @@
-import shakespeare, sys, mmh3, math, collections, random, string, hllbias
+import shakespeare, sys, mmh3, math, collections, random, string, hllbias, statistics
 
 class HyperLogLog:
     def __init__(self, log2m):
@@ -45,14 +45,17 @@ class HyperLogLog:
         return v
 
 if __name__ == '__main__':
-    words = set(shakespeare.all_words())
-    expected = len(words)
-    print expected
+    works = list(shakespeare.each_work())
     for p in range(7, 19):
-        H = HyperLogLog(p)
-        for word in words:
-            H.add(word)
-        print p, H.cardinality(method=0), H.cardinality(method=1), H.cardinality(method=2)      
+        T0 = []
+        T2 = []
+        for name, words in works:
+            H = HyperLogLog(p)
+            for word in words:
+                H.add(word)
+            T0.append(abs(len(words) - H.cardinality(method=0))/len(words))
+            T2.append(abs(len(words) - H.cardinality(method=2))/len(words))
+        print('\t'.join(map(str, (p, statistics.mean(T2), statistics.mean(T2)+statistics.stdev(T2), max(T2)))))
     
 
             

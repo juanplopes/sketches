@@ -42,7 +42,6 @@ if __name__ == '__main__':
 
     hashes = {name: hsig(1000, A) for name, A in works}
 
-
     for k in range(25, 1001, 25):
         sys.stderr.write(str(k)+'\n')
         T = []
@@ -52,6 +51,6 @@ if __name__ == '__main__':
                 name2, words2 = works[j]
                 normal = real[(name1, name2)]
                 hashed = hcmp(k, hashes[name1][0:k], hashes[name2][0:k])
-                T.append(hashed-normal)
-        print('\t'.join(map(str, (k, statistics.mean(T), min(T), max(T), statistics.stdev(T),-statistics.stdev(T)))))
+                T.append(abs(hashed-normal))
+        print('\t'.join(map(str, (k, statistics.mean(T), max(T)))))
 
