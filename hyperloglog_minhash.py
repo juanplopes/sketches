@@ -50,8 +50,14 @@ class HyperLogLog:
             x<<=1
         return v
 
+def minhash1_sig(k, A):
+    return [min(mmh3.hash(word, i) for word in A) for i in range(k)]
+
+def minhash1(k, HA, HB):
+    return sum(a==b for a, b in zip(HA, HB))/float(k)
+
 def minhash2_sig(k, A):
-    return heapq.nsmallest(k, (mmh3.hash(str(word), 0) for word in A))
+    return heapq.nsmallest(k, (mmh3.hash(word, 0) for word in A))
 
 def minhash2(k, HA, HB):
     HX = heapq.nsmallest(k, set(HA).union(HB))
@@ -86,11 +92,11 @@ if __name__ == '__main__':
     works = list(shakespeare.each_work()) + list(shakespeare.each_work('duplicates'))
 
     real = real(works)
-   
+    
     hsig = minhash2_sig
     hcmp = minhash2
 
-    hashes = {name: hsig(512, A) for name, A in works}
+    hashes = {name: hsig(2048, A) for name, A in works}
 
     sys.stderr.write('_\n')
     for p in range(7, 19):
@@ -103,7 +109,7 @@ if __name__ == '__main__':
                 name1, words1 = works[i]
                 name2, words2 = works[j]
                 normal = real[(name1, name2)]
-                jaccard = hcmp(512, hashes[name1], hashes[name2])
+                jaccard = hcmp(2048, hashes[name1], hashes[name2])
                 union = hlls[name1].union(hlls[name2]).cardinality()
                 
                 #print(' ', abs(jaccard*union-normal)/normal, jaccard*union, normal)

@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     real = real(works)
    
-    hsig = minhash1_sig
-    hcmp = minhash1
+    hsig = minhash2_sig
+    hcmp = minhash2
 
     hashes = {name: hsig(1000, A) for name, A in works}
 
@@ -51,6 +51,6 @@ if __name__ == '__main__':
                 name2, words2 = works[j]
                 normal = real[(name1, name2)]
                 hashed = hcmp(k, hashes[name1][0:k], hashes[name2][0:k])
-                T.append(abs(hashed-normal))
-        print('\t'.join(map(str, (k, statistics.mean(T), max(T)))))
+                T.append(abs(hashed-normal)/normal)
+        print('\t'.join(map(str, (k, statistics.mean(T), statistics.mean(T)+statistics.stdev(T), max(T)))))
 
