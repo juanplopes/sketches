@@ -25,6 +25,14 @@ class CountMin:
         zeros = sum(float(d.count(0)) for d in self.data)
         return round(-self.m * math.log(zeros / self.m / self.k))
 
+    def product(self, other):   
+        answer = 2**30
+        for i in range(self.k):
+            s = 0
+            for j in range(self.m):
+                s += self.data[i][j] * other.data[i][j]
+            answer = min(answer, s)
+        return answer
 
 
 def percentile(N, percent, key=lambda x:x):
@@ -51,22 +59,43 @@ def percentile(N, percent, key=lambda x:x):
     d1 = key(N[int(c)]) * (k-f)
     return d0+d1
 
+def real(works):
+    real = {}
+    for i in range(len(works)):
+        for j in range(i+1, len(works)):
+            name1, words1 = works[i]
+            name2, words2 = works[j]
+            
+            dic1 = collections.Counter(words1)
+            dic2 = collections.Counter(words2)
+           
+            real[(name1, name2)] = sum(v*dic2[k] for k,v in dic1.items())
+    return real
+
+
 if __name__ == '__main__':
-    word_list = list(shakespeare.all_words())
-    C = shakespeare.print_counter()
+    works = list(shakespeare.each_work_raw()) + list(shakespeare.each_work_raw('duplicates'))
+    real = real(works)
 
     for m in range(2**7, 2**12+1, 2**7):
         sys.stderr.write(str(m)+'\n')
 
-        M = CountMin(m, 3)
-        for word in word_list:
-            M.add(word)
+        sketches = {}
+        for name, words in works:
+            M = CountMin(m, 3)
+            for word in words:
+                M.add(word)
+            sketches[name] = M
 
         T = []
-        top100 = C.items() #heapq.nlargest(10000, C.items(), key=lambda v:v[1])
-        for word, count in top100:
-            T.append((M.count(word)-count)/len(word_list))
-
+        for i in range(len(works)):
+            for j in range(i+1, len(works)):
+                name1, words1 = works[i]
+                name2, words2 = works[j]
+                normal = real[(name1, name2)]
+                hashed = sketches[name1].product(sketches[name2])
+                T.append(abs(hashed-normal) / (len(words1)* len(words2)))
+                #print(i, j, normal, hashed, abs(hashed-normal) / (len(words1)* len(words2)), 2.718281828/m)
         T.sort()
         print('\t'.join(map(str, (m, statistics.mean(T), percentile(T, 0.999)))))
     
