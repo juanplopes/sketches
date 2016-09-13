@@ -50,19 +50,28 @@ class HyperLogLog:
             x<<=1
         return v
 
-def minhash1_sig(k, A):
-    return [min(mmh3.hash(word, i) for word in A) for i in range(k)]
+class MinHash:
+    def __init__(self, m):
+        self.m = m
+        self.data = []
+        
+    def add(self, o):
+        h = mmh3.hash(o, 0)
+        if len(self.data) < self.m:
+            heapq.heappush(self.data, -h)
+        else:
+            heapq.heappushpop(self.data, -h)
 
-def minhash1(k, HA, HB):
-    return sum(a==b for a, b in zip(HA, HB))/float(k)
+    def jaccard(self, other):
+        HX = heapq.nlargest(self.m, set(self.data).union(other.data))
+        HY = set(HX).intersection(self.data).intersection(other.data)
+        return len(HY)/float(self.m)
 
-def minhash2_sig(k, A):
-    return heapq.nsmallest(k, (mmh3.hash(word, 0) for word in A))
-
-def minhash2(k, HA, HB):
-    HX = heapq.nsmallest(k, set(HA).union(HB))
-    HY = set(HX).intersection(HA).intersection(HB)
-    return len(HY)/float(k)
+def minhash(m, A):
+    mh = MinHash(m)
+    for word in A:
+        mh.add(word)
+    return mh
 
 def hll(p, A):
     HA = HyperLogLog(p)
@@ -93,10 +102,7 @@ if __name__ == '__main__':
 
     real = real(works)
     
-    hsig = minhash2_sig
-    hcmp = minhash2
-
-    hashes = {name: hsig(2048, A) for name, A in works}
+    hashes = {name: minhash(2048, A) for name, A in works}
 
     sys.stderr.write('_\n')
     for p in range(7, 19):
@@ -109,7 +115,7 @@ if __name__ == '__main__':
                 name1, words1 = works[i]
                 name2, words2 = works[j]
                 normal = real[(name1, name2)]
-                jaccard = hcmp(2048, hashes[name1], hashes[name2])
+                jaccard = hashes[name1].jaccard(hashes[name2])
                 union = hlls[name1].union(hlls[name2]).cardinality()
                 
                 #print(' ', abs(jaccard*union-normal)/normal, jaccard*union, normal)
