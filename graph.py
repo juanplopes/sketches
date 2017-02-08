@@ -13,18 +13,24 @@ class HyperLogLog:
         a, b = 32-self.log2m, self.log2m
 
         i = x >> a
-        v = self._bitscan(x << b, a)
+        v = self._prefix(x << b, a)
         
-        self.data[i] = max(self.data[i], v)
+        self.data[i] |= 1 << (v-1)
 
     def union(self, hb):
         hc = HyperLogLog(self.log2m)
         for i in range(self.m):
-            hc.data[i] = max(self.data[i], hb.data[i])
+            hc.data[i] = self.data[i] | hb.data[i]
         return hc
 
+    def intersection(self, hb):
+        hc = HyperLogLog(self.log2m)
+        for i in range(self.m):
+            hc.data[i] = self.data[i] & hb.data[i]
+        return hc
+        
     def cardinality(self, method=2):
-        estimate = self.alphaMM / sum([2**-v for v in self.data])
+        estimate = self.alphaMM / sum([2**-self._bitscan(v) for v in self.data])
         zeros = float(self.data.count(0))
         if method == 2:
             bias = hllbias.bias(self.log2m, estimate)
@@ -43,11 +49,18 @@ class HyperLogLog:
         else:
             return round(estimate)
         
-    def _bitscan(self, x, m):
+    def _prefix(self, x, m):
         v = 1
         while v<=m and not x&0x80000000:
             v+=1
             x<<=1
+        return v
+        
+    def _bitscan(self, x):
+        v = 0
+        while x:
+            v+=1
+            x>>=1
         return v
 
 class MinHash:
@@ -79,8 +92,9 @@ class IntersectionSketch:
         
     def intersection(self, other):
         union = self.hll.union(other.hll).cardinality()
+        intersection = self.hll.intersection(other.hll).cardinality()
         jaccard = self.mh.jaccard(other.mh)
-        print(union, jaccard)
+        print(union, intersection, jaccard)
         return union*jaccard
         
 if __name__ == '__main__':
@@ -89,7 +103,7 @@ if __name__ == '__main__':
     
     for i in range(1000000):
         a.add(i)
-    for i in range(1000000-1, 2000000):
+    for i in range(500000, 2000000):
         b.add(i)
 
     answer = a.intersection(b)
