@@ -5,6 +5,6 @@ S1 = words[:6]
 S2 = words[2:]
 
 for word in words:
-    print word, [mmh3.hash(word, i) % 16 for i in range(2)]
+    print word, [mmh3.hash(word, i) % 8 for i in range(2)]
     
 
